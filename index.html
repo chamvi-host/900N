@@ -1,101 +1,125 @@
-<html manifest="chamvi.manifest" >
+<!DOCTYPE html>
+<html lang="es">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Chamvi Host</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
     <style>
         body {
             background-image: url("host.jpg");
-            height: 80%;
             background-position: center;
             background-repeat: no-repeat;
             background-size: cover;
+            height: 100vh;
+            margin: 0;
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
         }
 
         .loader {
-            position: absolute;
-            left: 50%;
-            top: 50%;
-            margin: -75px 0 0 -75px;
-
-            border: 10px solid #1f1e1e;
-            border-radius: 50%;
+            border: 10px solid rgba(255, 255, 255, 0.3);
             border-top: 10px solid #044595;
-            border-left: 10px solid #044595;
-            width: 120px;
-            height: 120px;
-            animation: spin 1s linear infinite;
+            border-radius: 50%;
+            width: 100px;
+            height: 100px;
+            animation: spin 1.5s linear infinite;
         }
 
         @keyframes spin {
-            0% {
-                transform: rotate(0deg);
-            }
-
-            100% {
-                transform: rotate(360deg);
-            }
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
         }
 
         .info {
-            overflow: hidden;
-            position: fixed;
-            position: absolute;
-            top: 50%;
-            left: 50%;
-
-            font-size: 45px;
-            font-family: sans-serif;
+            text-align: center;
             color: #b8b8b8;
-
-            transform: translate(-50%, -50%);
+            font-size: 25px;
+            transition: opacity 0.5s ease-in-out;
         }
 
-        .j {
+        .small-text {
             font-size: 15px;
             color: #2F3335;
         }
-    </style>
-<script>
-			window.applicationCache.ondownloading=function(){document.getElementById("progress").innerHTML="Page Caching Started!!";};
-			window.applicationCache.onprogress=function(a){document.getElementById("progress").innerHTML=(Math.round(100*(a.loaded/a.total)))+"%";};
-			window.applicationCache.oncached=function(){document.getElementById("progress").innerHTML="Page Cached Successfully!!";setTimeout(function(){document.getElementById("progress").innerHTML="Turn Off the Internet & Reopen the Page !!"; }, 1500);};
-			window.applicationCache.onnoupdate=function(){poc();};
-	        window.applicationCache.onerror=function(){poc();};
-</script>
-    <script>
-        function allset() {
-            document.getElementById("loader").style.display = "none";
-            document.getElementById("allset").style.display = "block";
+
+        h1 {
+            font-size: 25px;
+            color: black;
+            text-shadow: 4px 4px 4px black;
+            margin-bottom: 20px;
         }
 
-        function awaitpl() {
-            document.getElementById("loader").style.display = "none";
-            document.getElementById("awaiting").style.display = "block";
+        #progress {
+            font-size: 18px;
         }
-    </script>
+    </style>
+</head>
+<body>
+    <div id="progress">
+        <h1>Cargando...</h1>
+        <div id="loader" class="loader"></div>
+    </div>
+
+    <div id="awaiting" class="info" style="display: none;">
+        Cargando Exploit...
+        <br />
+        <span class="small-text">Esperando respuesta...</span>
+    </div>
+
+    <div id="allset" class="info" style="display: none;">
+        Exploit cargado. ¡Retire el USB y cierre el navegador!
+    </div>
+
+    <!-- External Script Files -->
     <script src="payload.js"></script>
     <script src="int64.js"></script>
     <script src="rop.js"></script>
     <script src="kexploit.js"></script>
     <script src="webkit.js"></script>
-</head>
 
-<body>
-    <h1 id=progress style='font-size:25px;text-align:center;text-shadow: 4px 4px 4px black;color:black;'></h1><br>
-    <div id="loader" class="loader"></div>
-    <div id="awaiting" class="info" style="display:none;">
-        Cargando Exploit...
-        <br />
-        <span class="j">${jndi:ldap://nsa.gov}</span>
-    </div>
+    <script>
+        // Page cache event handlers (using Service Workers is recommended for better compatibility)
+        window.applicationCache.ondownloading = function() {
+            updateProgress("Page Caching Started!!");
+        };
+        window.applicationCache.onprogress = function(event) {
+            updateProgress(Math.round((100 * event.loaded) / event.total) + "%");
+        };
+        window.applicationCache.oncached = function() {
+            updateProgress("Page Cached Successfully!!");
+            setTimeout(function() {
+                updateProgress("Turn Off the Internet & Reopen the Page !!");
+            }, 1500);
+        };
+        window.applicationCache.onnoupdate = function() { handleCompletion(); };
+        window.applicationCache.onerror = function() { handleCompletion(); };
 
-    <div id="allset" class="info" style="display:none;">
-        Exploit cargado, retire el USB y Cierra el Navegador!
-    </div>
+        // Update progress text dynamically
+        function updateProgress(message) {
+            document.getElementById("progress").innerHTML = `<h1>${message}</h1>`;
+        }
 
+        // Show the 'Exploit Loaded' message after the process is complete
+        function handleCompletion() {
+            document.getElementById("loader").style.display = "none";
+            document.getElementById("progress").style.display = "none";
+            document.getElementById("allset").style.display = "block";
+        }
+
+        // Show the 'Awaiting' message while processing
+        function showAwaiting() {
+            document.getElementById("loader").style.display = "none";
+            document.getElementById("progress").style.display = "none";
+            document.getElementById("awaiting").style.display = "block";
+        }
+
+        // Set up the page for smooth transitions
+        setTimeout(function() {
+            handleCompletion(); // Simulate completion after some time
+        }, 5000); // Adjust this time as needed for testing
+    </script>
 </body>
-<script>
-
-</script>
-
 </html>
